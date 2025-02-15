@@ -187,6 +187,28 @@ export default function Home() {
 
   return (
     <div className="flex h-screen">
+      {/* Desktop Drawer */}
+      <div className="hidden lg:flex lg:flex-col w-[300px] border-r">
+        <div className="p-6 border-b"> {/* Fixed header */}
+          <Button onClick={addFolder} className="w-full rounded-full">
+            <PlusIcon className="mr-2 h-4 w-4" /> New Folder
+          </Button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-6"> {/* Scrollable content */}
+          {folders.map((folder) => (
+            <Folder
+              key={folder.id}
+              folder={folder}
+              promptCount={prompts[folder.id]?.length || 0}
+              onRename={renameFolder}
+              onDelete={deleteFolder}
+              onSelect={() => setSelectedFolder(folder.id)}
+              isSelected={selectedFolder === folder.id}
+            />
+          ))}
+        </div>
+      </div>
+
       {/* Mobile Drawer */}
       <Sheet>
         <SheetTrigger asChild className="lg:hidden">
@@ -194,11 +216,13 @@ export default function Home() {
             <MenuIcon className="h-4 w-4" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-          <div className="py-4">
-            <Button onClick={addFolder} className="w-full mb-6 rounded-full">
+        <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0 flex flex-col">
+          <div className="p-6 border-b"> {/* Fixed header */}
+            <Button onClick={addFolder} className="w-full rounded-full">
               <PlusIcon className="mr-2 h-4 w-4" /> New Folder
             </Button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-6"> {/* Scrollable content */}
             {folders.map((folder) => (
               <Folder
                 key={folder.id}
@@ -213,24 +237,6 @@ export default function Home() {
           </div>
         </SheetContent>
       </Sheet>
-
-      {/* Desktop Drawer */}
-      <div className="hidden lg:block w-[300px] border-r p-6 overflow-y-auto">
-        <Button onClick={addFolder} className="w-full mb-6 rounded-full">
-          <PlusIcon className="mr-2 h-4 w-4" /> New Folder
-        </Button>
-        {folders.map((folder) => (
-          <Folder
-            key={folder.id}
-            folder={folder}
-            promptCount={prompts[folder.id]?.length || 0}
-            onRename={renameFolder}
-            onDelete={deleteFolder}
-            onSelect={() => setSelectedFolder(folder.id)}
-            isSelected={selectedFolder === folder.id}
-          />
-        ))}
-      </div>
 
       {/* Main Content */}
       <div className="flex-1 p-6 overflow-auto">
