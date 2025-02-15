@@ -242,7 +242,7 @@ export default function Home() {
       <div className="flex-1 p-6 overflow-auto">
         <div className="lg:hidden h-16"></div> {/* Spacer for mobile */}
         <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold min-w-0 truncate">
+          <h1 className="text-2xl font-bold min-w-0 truncate text-center sm:text-left">
             {selectedFolder ? `${folders.find((f) => f.id === selectedFolder)?.name} Prompts` : "Prompt Manager"}
           </h1>
           <div className="flex items-center justify-center w-full sm:w-auto sm:justify-end gap-1 sm:gap-2 flex-shrink-0">
