@@ -246,11 +246,11 @@ export default function Home() {
             {selectedFolder ? `${folders.find((f) => f.id === selectedFolder)?.name} Prompts` : "Prompt Manager"}
           </h1>
           <div className="flex items-center justify-center w-full sm:w-auto sm:justify-end gap-1 sm:gap-2 flex-shrink-0">
-            <Button onClick={importData} className="rounded-full px-2 sm:px-4 text-sm min-w-14">
+            <Button onClick={importData} variant="outline" className="rounded-full px-2 sm:px-4 text-sm min-w-14">
               <UploadIcon className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Import</span>
             </Button>
-            <Button onClick={exportData} className="rounded-full px-2 sm:px-4 text-sm min-w-14">
+            <Button onClick={exportData} variant="outline" className="rounded-full px-2 sm:px-4 text-sm min-w-14">
               <DownloadIcon className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Export</span>
             </Button>
