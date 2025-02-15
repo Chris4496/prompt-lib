@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { PlusIcon, MenuIcon } from "lucide-react"
+import { PlusIcon, MenuIcon, DownloadIcon, UploadIcon } from "lucide-react"
 import Folder from "./components/folder"
 import Prompt from "./components/prompt"
+import { useToast } from "@/hooks/use-toast"
+
 
 interface FolderType {
   id: number
@@ -55,11 +57,10 @@ export default function Home() {
 
   const deleteFolder = (id: number) => {
     setFolders(folders.filter((folder) => folder.id !== id))
-    const { [id]: _, ...newPrompts } = prompts
-    setPrompts(newPrompts)
-    console.log(selectedFolder, _)
+    const { [id]: _, ...newPrompts } = prompts;
+    setPrompts(newPrompts);
     if (selectedFolder === id) {
-      setSelectedFolder(null)
+      setSelectedFolder(null);
     }
   }
 
@@ -78,6 +79,109 @@ export default function Home() {
       ...prompts,
       [folderId]: prompts[folderId].map((prompt) => (prompt.id === promptId ? { ...prompt, title, text } : prompt)),
     })
+  }
+
+  const { toast } = useToast()
+
+  const exportData = () => {
+    const data = {
+      folders: folders,
+      prompts: prompts,
+    }
+    const jsonString = JSON.stringify(data, null, 2)
+    const blob = new Blob([jsonString], { type: "application/json" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = "prompt_manager_export.json"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    toast({
+      title: "Export Successful",
+      description: "Your data has been exported to a JSON file.",
+    })
+  }
+
+  const importData = () => {
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = "application/json"
+    
+    input.onchange = async (e) => {
+      try {
+        const target = e.target as HTMLInputElement | null;
+        const file = target?.files?.[0];
+        if (!file) return
+        
+        const text = await file.text()
+        const data = JSON.parse(text)
+        
+        // Validate data structure
+        if (!data.folders || !data.prompts || 
+            !Array.isArray(data.folders) ||
+            typeof data.prompts !== 'object') {
+          throw new Error('Invalid file format')
+        }
+  
+        // Validate folder structure
+        const isValidFolder = (folder: FolderType) => {
+          return folder.id && 
+                 typeof folder.id === 'number' &&
+                 folder.name &&
+                 typeof folder.name === 'string'
+        }
+  
+        if (!data.folders.every(isValidFolder)) {
+          throw new Error('Invalid folder data')
+        }
+  
+        // Validate prompts structure
+        const isValidPrompt = (prompt: PromptType) => {
+          return prompt.id &&
+                 typeof prompt.id === 'number' &&
+                 prompt.title &&
+                 typeof prompt.title === 'string' &&
+                 prompt.text &&
+                 typeof prompt.text === 'string'
+        }
+  
+        for (const folderId in data.prompts) {
+          if (!Array.isArray(data.prompts[folderId]) ||
+              !data.prompts[folderId].every(isValidPrompt)) {
+            throw new Error('Invalid prompt data')
+          }
+        }
+  
+        // Save to localStorage
+        localStorage.setItem("folders", JSON.stringify(data.folders))
+        localStorage.setItem("prompts", JSON.stringify(data.prompts))
+        
+        // Update state
+        setFolders(data.folders)
+        setPrompts(data.prompts)
+        setSelectedFolder(null)
+  
+        toast({
+          title: "Import Successful",
+          description: "Your data has been imported successfully.",
+        })
+      } catch (error) {
+        let errorMessage = "Failed to import data. Please make sure the file is valid.";
+        if (error instanceof Error) {
+          errorMessage = `Failed to import data: ${error.message}`;
+        }
+        toast({
+          title: "Import Failed",
+          description: errorMessage,
+          variant: "destructive",
+        })
+        console.error('Import error:', error)
+      }
+    }
+  
+    input.click()
   }
 
   return (
@@ -130,26 +234,38 @@ export default function Home() {
       {/* Main Content */}
       <div className="flex-1 p-6 overflow-auto">
         <div className="lg:hidden h-16"></div> {/* Spacer for mobile */}
-        {selectedFolder ? (
-          <>
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">{folders.find((f) => f.id === selectedFolder)?.name}</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">
+            {selectedFolder ? `${folders.find((f) => f.id === selectedFolder)?.name} Prompts` : "Prompt Manager"}
+          </h1>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={importData} className="rounded-full">
+              <UploadIcon className="mr-2 h-4 w-4" /> Import
+            </Button>
+            <Button onClick={exportData} className="rounded-full">
+              <DownloadIcon className="mr-2 h-4 w-4" /> Export
+            </Button>
+            {selectedFolder && (
               <Button onClick={addPrompt} className="rounded-full">
                 <PlusIcon className="mr-2 h-4 w-4" /> New Prompt
               </Button>
-            </div>
-            <div className="space-y-6">
-              {prompts[selectedFolder]?.map((prompt) => (
-                <Prompt
-                  key={prompt.id}
-                  prompt={prompt}
-                  onUpdate={(title, text) => updatePrompt(selectedFolder, prompt.id, title, text)}
-                />
-              ))}
-            </div>
-          </>
+            )}
+          </div>
+        </div>
+        {selectedFolder ? (
+          <div className="space-y-6">
+            {prompts[selectedFolder]?.map((prompt) => (
+              <Prompt
+                key={prompt.id}
+                prompt={prompt}
+                onUpdate={(title, text) => updatePrompt(selectedFolder, prompt.id, title, text)}
+              />
+            ))}
+          </div>
         ) : (
-          <h1 className="text-2xl font-bold">Select a folder to view prompts</h1>
+          <p className="text-muted-foreground">
+            Select a folder to view prompts or use the Import button to upload your data.
+          </p>
         )}
       </div>
     </div>
