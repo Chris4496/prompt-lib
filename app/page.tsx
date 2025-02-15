@@ -82,6 +82,13 @@ export default function Home() {
     })
   }
 
+  const deletePrompt = (folderId: number, promptId: number) => {
+    setPrompts({
+      ...prompts,
+      [folderId]: prompts[folderId].filter((prompt) => prompt.id !== promptId),
+    })
+  }
+
   const { toast } = useToast()
 
   const exportData = () => {
@@ -269,6 +276,7 @@ export default function Home() {
                 key={prompt.id}
                 prompt={prompt}
                 onUpdate={(title, text) => updatePrompt(selectedFolder, prompt.id, title, text)}
+                onDelete={(id) => deletePrompt(selectedFolder, id)}
               />
             ))}
           </div>
