@@ -58,6 +58,7 @@ export default function Home() {
   const deleteFolder = (id: number) => {
     setFolders(folders.filter((folder) => folder.id !== id))
     const { [id]: _, ...newPrompts } = prompts;
+    console.log(selectedFolder, _);
     setPrompts(newPrompts);
     if (selectedFolder === id) {
       setSelectedFolder(null);
