@@ -67,7 +67,7 @@ export default function Home() {
 
   const addPrompt = () => {
     if (selectedFolder) {
-      const newPrompt = { id: Date.now(), title: "New Prompt", text: "Enter your prompt here" }
+      const newPrompt = { id: Date.now(), title: "", text: "" }
       setPrompts({
         ...prompts,
         [selectedFolder]: [...(prompts[selectedFolder] || []), newPrompt],

@@ -39,6 +39,7 @@ export default function Prompt({ prompt, onUpdate }: PromptProps) {
             onChange={(e) => setTitle(e.target.value)}
             onBlur={handleUpdate}
             className="text-xl font-bold"
+            placeholder="New Prompt"
           />
         </CardTitle>
       </CardHeader>
@@ -48,6 +49,7 @@ export default function Prompt({ prompt, onUpdate }: PromptProps) {
           onChange={(e) => setText(e.target.value)}
           onBlur={handleUpdate}
           className="min-h-[100px]"
+          placeholder="Enter your prompt here"
         />
         <Button variant="outline" size="sm" onClick={handleCopy} className="rounded-full">
           <Copy className="h-4 w-4 mr-2" />
