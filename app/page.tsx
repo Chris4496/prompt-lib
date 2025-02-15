@@ -235,20 +235,23 @@ export default function Home() {
       {/* Main Content */}
       <div className="flex-1 p-6 overflow-auto">
         <div className="lg:hidden h-16"></div> {/* Spacer for mobile */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">
+        <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-2xl font-bold min-w-0 truncate">
             {selectedFolder ? `${folders.find((f) => f.id === selectedFolder)?.name} Prompts` : "Prompt Manager"}
           </h1>
-          <div className="flex flex-wrap gap-2">
-            <Button onClick={importData} className="rounded-full">
-              <UploadIcon className="mr-2 h-4 w-4" /> Import
+          <div className="flex items-center justify-center w-full sm:w-auto sm:justify-end gap-1 sm:gap-2 flex-shrink-0">
+            <Button onClick={importData} className="rounded-full px-2 sm:px-4 text-sm min-w-14">
+              <UploadIcon className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Import</span>
             </Button>
-            <Button onClick={exportData} className="rounded-full">
-              <DownloadIcon className="mr-2 h-4 w-4" /> Export
+            <Button onClick={exportData} className="rounded-full px-2 sm:px-4 text-sm min-w-14">
+              <DownloadIcon className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export</span>
             </Button>
             {selectedFolder && (
-              <Button onClick={addPrompt} className="rounded-full">
-                <PlusIcon className="mr-2 h-4 w-4" /> New Prompt
+              <Button onClick={addPrompt} className="rounded-full px-2 sm:px-4 text-sm min-w-14">
+                <PlusIcon className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">New Prompt</span>
               </Button>
             )}
           </div>
