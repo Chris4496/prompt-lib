@@ -57,6 +57,7 @@ export default function Home() {
     setFolders(folders.filter((folder) => folder.id !== id))
     const { [id]: _, ...newPrompts } = prompts
     setPrompts(newPrompts)
+    console.log(selectedFolder, _)
     if (selectedFolder === id) {
       setSelectedFolder(null)
     }

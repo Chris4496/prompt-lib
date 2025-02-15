@@ -23,19 +23,11 @@ export default function Prompt({ prompt, onUpdate }: PromptProps) {
   }
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(text)
-      toast({
-        title: "Copied to clipboard",
-        description: "The prompt text has been copied to your clipboard.",
-      })
-    } catch (err) {
-      toast({
-        title: "Failed to copy",
-        description: "There was an error copying the text to your clipboard.",
-        variant: "destructive",
-      })
-    }
+    await navigator.clipboard.writeText(text)
+    toast({
+      title: "Copied to clipboard",
+      description: "The prompt text has been copied to your clipboard.",
+    })
   }
 
   return (
