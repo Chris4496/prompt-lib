@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Copy } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { MoreVertical, Edit, Trash } from "lucide-react"
+import { MoreVertical, Trash } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 interface PromptProps {
