@@ -112,7 +112,7 @@ export default function Home() {
     const seconds = String(now.getSeconds()).padStart(2, '0');
     const timestamp = `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
   
-    link.download = `prompt_manager_export_${timestamp}.json`;  // Use the timestamp in the filename
+    link.download = `prompt_manager_export_${timestamp}.txt`;  // Use the timestamp in the filename
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -126,7 +126,7 @@ export default function Home() {
   const importData = () => {
     const input = document.createElement("input")
     input.type = "file"
-    input.accept = "application/json"
+    input.accept = "text/plain"
     
     input.onchange = async (e) => {
       try {
@@ -136,6 +136,8 @@ export default function Home() {
         
         const text = await file.text()
         const data = JSON.parse(text)
+
+        console.log(data)
         
         // Validate data structure
         if (!data.folders || !data.prompts || 
