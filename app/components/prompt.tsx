@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -19,17 +19,65 @@ interface PromptProps {
 export default function Prompt({ prompt, onUpdate, onDelete }: PromptProps) {
   const [title, setTitle] = useState(prompt.title)
   const [text, setText] = useState(prompt.text)
+  const [placeholderValues, setPlaceholderValues] = useState<Record<string, string>>({})
   const { toast } = useToast()
+
+  // Extract unique placeholders from text
+  const extractPlaceholders = (text: string): string[] => {
+    const matches = text.match(/\{\{([^}]+)\}\}/g)
+    if (!matches) return []
+
+    const uniquePlaceholders = [...new Set(
+      matches.map(match => match.slice(2, -2).trim())
+    )]
+    return uniquePlaceholders
+  }
+
+  const placeholders = extractPlaceholders(text)
+
+  // Clean up placeholder values when text changes
+  React.useEffect(() => {
+    const currentPlaceholders = extractPlaceholders(text)
+    setPlaceholderValues(prev => {
+      const cleaned = { ...prev }
+      Object.keys(cleaned).forEach(key => {
+        if (!currentPlaceholders.includes(key)) {
+          delete cleaned[key]
+        }
+      })
+      return cleaned
+    })
+  }, [text])
+
+  // Update placeholder values
+  const updatePlaceholderValue = (placeholder: string, value: string) => {
+    setPlaceholderValues(prev => ({
+      ...prev,
+      [placeholder]: value
+    }))
+  }
 
   const handleUpdate = () => {
     onUpdate(title, text)
   }
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(text)
+    let processedText = text
+
+    // Substitute placeholder values
+    Object.entries(placeholderValues).forEach(([placeholder, value]) => {
+      if (value.trim()) {
+        const regex = new RegExp(`\\{\\{\\s*${placeholder}\\s*\\}\\}`, 'g')
+        processedText = processedText.replace(regex, value)
+      }
+    })
+
+    await navigator.clipboard.writeText(processedText)
     toast({
       title: "Copied to clipboard",
-      description: "The prompt text has been copied to your clipboard.",
+      description: placeholders.length > 0
+        ? "The prompt text has been copied with placeholder substitutions."
+        : "The prompt text has been copied to your clipboard.",
     })
   }
 
@@ -54,6 +102,27 @@ export default function Prompt({ prompt, onUpdate, onDelete }: PromptProps) {
           className="min-h-[100px]"
           placeholder="Enter your prompt here"
         />
+
+        {/* Placeholder inputs */}
+        {placeholders.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium text-gray-700">Fill in placeholders:</h4>
+            {placeholders.map((placeholder) => (
+              <div key={placeholder} className="flex items-center space-x-2">
+                <label className="text-sm font-medium min-w-[100px]">
+                  {placeholder}:
+                </label>
+                <Input
+                  value={placeholderValues[placeholder] || ''}
+                  onChange={(e) => updatePlaceholderValue(placeholder, e.target.value)}
+                  placeholder={`Enter ${placeholder}`}
+                  className="flex-1"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
         <Button variant="outline" size="sm" onClick={handleCopy} className="rounded-full">
           <Copy className="h-4 w-4 mr-2" />
           Copy

@@ -8,14 +8,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 interface FolderProps {
   folder: { id: number; name: string }
-  promptCount: number
   onRename: (id: number, newName: string) => void
   onDelete: (id: number) => void
   onSelect: () => void
   isSelected: boolean
 }
 
-export default function Folder({ folder, promptCount, onRename, onDelete, onSelect, isSelected }: FolderProps) {
+export default function Folder({ folder, onRename, onDelete, onSelect, isSelected }: FolderProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [newName, setNewName] = useState(folder.name)
 
@@ -44,7 +43,6 @@ export default function Folder({ folder, promptCount, onRename, onDelete, onSele
         ) : (
           <span className="flex-1">{folder.name}</span>
         )}
-        <span className="text-sm text-muted-foreground ml-2">({promptCount})</span>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>

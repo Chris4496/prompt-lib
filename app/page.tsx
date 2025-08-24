@@ -219,7 +219,6 @@ export default function Home() {
             <Folder
               key={folder.id}
               folder={folder}
-              promptCount={prompts[folder.id]?.length || 0}
               onRename={renameFolder}
               onDelete={deleteFolder}
               onSelect={() => setSelectedFolder(folder.id)}
@@ -247,7 +246,6 @@ export default function Home() {
               <Folder
                 key={folder.id}
                 folder={folder}
-                promptCount={prompts[folder.id]?.length || 0}
                 onRename={renameFolder}
                 onDelete={deleteFolder}
                 onSelect={() => setSelectedFolder(folder.id)}
